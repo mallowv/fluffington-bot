@@ -1,0 +1,8 @@
+bot:
+    prefix:         "!"
+    sentry_dsn:     !ENV "BOT_SENTRY_DSN"
+    token:          !ENV "BOT_TOKEN"
+
+guild:
+    channels:
+        announcements: "announcements channel id"
