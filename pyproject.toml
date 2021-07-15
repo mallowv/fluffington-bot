@@ -17,6 +17,7 @@ python-dateutil = "^2.8.2"
 start = "python -m bot"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
+format = "black bot"
 
 [tool.poetry.dev-dependencies]
 flake8 = "~=3.8"
