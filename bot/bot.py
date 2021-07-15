@@ -85,10 +85,13 @@ prefix: any = (
     if config["fixed_and_single_prefix"]
     else BotPrefixHandler.get_prefix
 )
+intents = discord.Intents.default()
+intents.members = True
 
 bot: Bot = Bot(
     command_prefix=prefix,
     activity=discord.Game(name=f"Commands: {prefix}help"),
+    intents=intents,
 )
 
 # @bot.event
