@@ -2,3 +2,6 @@
 **/.env
 **/__pycache__
 lymba-bot-firebase-adminsdk.json
+.vscode/
+**/*.log
+.idea/
