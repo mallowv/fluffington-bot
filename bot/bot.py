@@ -10,6 +10,7 @@ from firebase_admin import firestore
 
 import bot.constants as constants
 from bot.utils.bot_prefix import BotPrefixHandler
+from bot.utils.converters import Prefix
 
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger)
@@ -80,7 +81,7 @@ db = firestore.client()
 config = [
     doc.to_dict() for doc in db.collection("config").stream() if doc.id == "main"
 ][0]
-prefix: any = (
+prefix: Prefix = (
     constants.Client.prefix
     if config["fixed_and_single_prefix"]
     else BotPrefixHandler.get_prefix
@@ -93,7 +94,3 @@ bot: Bot = Bot(
     activity=discord.Game(name=f"Commands: {prefix}help"),
     intents=intents,
 )
-
-# @bot.event
-# async def on_ready():
-#     await bot.send_log(bot.name, "Connected!")
