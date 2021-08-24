@@ -1,24 +1,27 @@
 from typing import Optional
 
 from discord.ext import commands
-from discord.ext.commands.bot import Bot
 from discord.ext.commands.converter import TextChannelConverter
 from discord import Embed, TextChannel
 
-import bot.constants as constants
+from bot.bot import Bot
+from bot.constants import Roles
+
 
 class EchoCommands(commands.Cog):
     """
     Apply and pardon infractions on users for moderation purposes.
     """
-    
-    def __init__(self, bot: commands.bot) -> None:
+
+    def __init__(self, bot: Bot) -> None:
         super().__init__()
         self.bot = bot
-        
-    @commands.command(name='echo', aliases=('print',))
-    @commands.has_any_role(*constants.Roles.moderation_roles)
-    async def echo_command(self, ctx: commands.Context, channel: Optional[TextChannelConverter], *, text: str) -> None:
+
+    @commands.command(name="echo", aliases=("print",))
+    @commands.has_any_role(*Roles.moderation_roles)
+    async def echo_command(
+        self, ctx: commands.Context, channel: Optional[TextChannel], *, text: str
+    ) -> None:
         """Repeat the given message in either a specified channel or the current channel."""
         if channel is None:
             await ctx.send(text)
@@ -27,9 +30,11 @@ class EchoCommands(commands.Cog):
         else:
             await channel.send(text)
 
-    @commands.command(name='embed')
-    @commands.has_any_role(*constants.Roles.moderation_roles)
-    async def embed_command(self, ctx: commands.Context, channel: Optional[TextChannel], *, text: str) -> None:
+    @commands.command(name="embed")
+    @commands.has_any_role(*Roles.moderation_roles)
+    async def embed_command(
+        self, ctx: commands.Context, channel: Optional[TextChannel], *, text: str
+    ) -> None:
         """Send the input within an embed to either a specified channel or the current channel."""
         embed = Embed(description=text)
 
@@ -37,3 +42,8 @@ class EchoCommands(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await channel.send(embed=embed)
+
+
+def setup(bot: Bot) -> None:
+    """load the EchoCommands cog"""
+    bot.add_cog(EchoCommands(bot))

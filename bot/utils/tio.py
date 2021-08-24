@@ -1,4 +1,4 @@
-"Library to interact asynchronously with tio.run"
+"""Library to interact asynchronously with tio.run"""
 
 from functools import partial
 from urllib.request import Request, urlopen
@@ -36,12 +36,12 @@ class Tio:
 
     @staticmethod
     def new_request(
-            language: str,
-            code: str,
-            inputs: str = "",
-            cflags: list = [],
-            options: list = [],
-            args: list = [],
+        language: str,
+        code: str,
+        inputs: str = "",
+        cflags: list = [],
+        options: list = [],
+        args: list = [],
     ):
         """Returns a DEFLATE compressed bytestring ready to be sent"""
 
@@ -85,4 +85,3 @@ class Tio:
             start, end = data.rindex("Real time: "), data.rindex("%\nExit code: ")
             data = data[:start] + data[end + 2 :]
             return data
-#mmmlol

@@ -24,13 +24,15 @@ class ModLog(commands.Cog):
 
         log = message.content
         footer = f"Author id: {message.author.id} | Message id: {message.id}"
-        server_logs: discord.TextChannel = self.bot.get_channel(Guilds.server_logs_channels.get(message.guild.id))
+        server_logs: discord.TextChannel = self.bot.get_channel(
+            Guilds.server_logs_channels.get(message.guild.id)
+        )
         embed: discord.Embed = discord.Embed(
             colour=Colours.soft_red,
             description=f"""
             **Message deleted by {author.mention} in <#{channel.id}>**
             {log}
-            """
+            """,
         )
         embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
         embed.set_footer(text=footer)
