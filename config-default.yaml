@@ -1,0 +1,28 @@
+bot:
+    prefix: "."
+    name: "Fluffington"
+    token: ${TOKEN}
+    sentry_dsn: ${SENTRY_DSN}
+
+guild:
+    channels:
+        announcements: "announcements channel id"
+        devlog_channel: 853873333027340299
+
+    roles:
+        moderation_roles:
+            - "Moderators"
+            - "Moderator"
+            - "Admin"
+            - "Administrator"
+            - "Administators"
+            - "Developers"
+            - "Owners"
+            - "Owner"
+
+database:
+    username: "postgres"
+    password: ${POSTGRES_PASSWORD}
+    host: "raspberry.pi"
+    port: "5432"
+    database: "fluffington"
