@@ -3,7 +3,8 @@ FROM python:3.9.5-slim
 
 # Set pip to have no saved cache
 ENV PIP_NO_CACHE_DIR=false \
-    POETRY_VIRTUALENVS_CREATE=false
+    POETRY_VIRTUALENVS_CREATE=false \
+    CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
 # Install poetry
 RUN pip install -U poetry
