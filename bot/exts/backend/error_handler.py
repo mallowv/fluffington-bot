@@ -21,8 +21,12 @@ class ErrorHandler(commands.Cog):
         error_embed = discord.Embed(color=discord.Colour.red())
         if isinstance(error, errors.CommandNotFound):
             error_embed.title = random.choice(NEGATIVE_RESPONSES)
-            error_embed.description = "that command does not exist"
+            error_embed.description = f"{ctx.invoked_with} command does not exist"
             await ctx.send(embed=error_embed)
+            return
+        error_embed.title = random.choice(NEGATIVE_RESPONSES)
+        error_embed.description = str(error)
+        await ctx.send(embed=error_embed)
 
 
 def setup(bot: Bot):
