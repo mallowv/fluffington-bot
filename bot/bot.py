@@ -1,16 +1,16 @@
 import asyncio
 import logging
+import socket
 
 import coloredlogs
 import arrow
+import aiohttp
 import discord
-from discord import DiscordException, Embed
+from discord import Embed
 from discord.ext import commands
-import firebase_admin
-from firebase_admin import firestore
 
 import bot.constants as constants
-from bot.utils.bot_prefix import BotPrefixHandler
+from bot.database.database import connect
 
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger)
@@ -26,7 +26,7 @@ class Bot(commands.bot.Bot):
     """
 
     startup_time = arrow.utcnow()
-    name = constants.Client.name
+    name = constants.Bot.name
 
     def __init__(self, **kwargs):
         super(Bot, self).__init__(**kwargs)
@@ -34,14 +34,17 @@ class Bot(commands.bot.Bot):
         self.loop.create_task(self.send_log(self.name, "Connected!"))
         self.debug = True
         self.static_prefix = self.debug
+        self._connector = None
+        self._resolver = None
+        self.http_session = None
 
     @classmethod
     def create(cls):
         intents = discord.Intents.default()
         intents.members = True
         return cls(
-            command_prefix=BotPrefixHandler.get_prefix,
-            activity=discord.Game(name=f"Commands: {constants.Client.prefix}help"),
+            command_prefix=constants.Bot.prefix,
+            activity=discord.Game(name=f"Commands: {constants.Bot.prefix}help"),
             intents=intents,
         )
 
@@ -61,6 +64,25 @@ class Bot(commands.bot.Bot):
     def unload_extension(self, name, *, package=None):
         super(Bot, self).unload_extension(name, package=package)
         logger.info(f"Extension unloaded: {name}")
+
+    @staticmethod
+    async def on_ready():
+        await connect()
+
+    async def login(self, *args, **kwargs):
+        # Use asyncio for DNS resolution instead of threads so threads aren't spammed.
+        self._resolver = aiohttp.AsyncResolver()
+
+        # Use AF_INET as its socket family to prevent HTTPS related problems both locally
+        # and in production.
+        self._connector = aiohttp.TCPConnector(
+            resolver=self._resolver,
+            family=socket.AF_INET,
+        )
+
+        self.http_session = aiohttp.ClientSession(connector=self._connector)
+
+        await super().login(*args, **kwargs)
 
     async def send_log(
         self, title: str, details: str = None, *, icon: str = None
