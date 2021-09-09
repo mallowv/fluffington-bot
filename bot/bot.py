@@ -11,6 +11,7 @@ from discord.ext import commands
 
 import bot.constants as constants
 from bot.database.database import connect
+from bot.utils.bot_prefix import BotPrefixHandler
 
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger)
@@ -33,7 +34,7 @@ class Bot(commands.bot.Bot):
         self._guild_available = asyncio.Event()
         self.loop.create_task(self.send_log(self.name, "Connected!"))
         self.debug = True
-        self.static_prefix = self.debug
+        self.static_prefix = False
         self._connector = None
         self._resolver = None
         self.http_session = None
@@ -43,7 +44,7 @@ class Bot(commands.bot.Bot):
         intents = discord.Intents.default()
         intents.members = True
         return cls(
-            command_prefix=constants.Bot.prefix,
+            command_prefix=BotPrefixHandler.get_prefix,
             activity=discord.Game(name=f"Commands: {constants.Bot.prefix}help"),
             intents=intents,
         )
