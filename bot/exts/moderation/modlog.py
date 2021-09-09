@@ -4,7 +4,8 @@ import discord
 from discord.ext import commands
 
 from bot.bot import Bot
-from bot.constants import Guilds, Colours
+from bot.constants import Colours
+from bot.database.models import Guild
 
 
 class ModLog(commands.Cog):
@@ -13,6 +14,8 @@ class ModLog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
+        guilds = await Guild.query.gino.all()
+        server_log_channels = {guild.id: guild.server_log_channel for guild in guilds}
         channel = message.channel
         author = message.author
 
@@ -25,7 +28,7 @@ class ModLog(commands.Cog):
         log = message.content
         footer = f"Author id: {message.author.id} | Message id: {message.id}"
         server_logs: discord.TextChannel = self.bot.get_channel(
-            Guilds.server_logs_channels.get(message.guild.id)
+            int(server_log_channels.get(str(message.guild.id)))
         )
         embed: discord.Embed = discord.Embed(
             colour=Colours.soft_red,
