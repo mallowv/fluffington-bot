@@ -10,7 +10,7 @@ class Announcements(commands.Cog):
     commands to subscribe and unsubscribe from the announcement notifications
     """
 
-    name = constants.Client.name
+    name = constants.Bot.name
 
     def __init__(self, bot: commands.Bot):
         super().__init__()
@@ -35,7 +35,7 @@ class Announcements(commands.Cog):
             return
 
         print(
-            f"{ctx.author} called {constants.Client.prefix}subscribe. Assigning the 'Announcements' role."
+            f"{ctx.author} called {constants.Bot.prefix}subscribe. Assigning the 'Announcements' role."
         )
         await ctx.author.add_roles(
             discord.Object(constants.Roles.announcements),
@@ -65,7 +65,7 @@ class Announcements(commands.Cog):
             return
 
         print(
-            f"{ctx.author} called {constants.Client.prefix}unsubscribe. Removing the 'Announcements' role."
+            f"{ctx.author} called {constants.Bot.prefix}unsubscribe. Removing the 'Announcements' role."
         )
         await ctx.author.remove_roles(
             discord.Object(constants.Roles.announcements),
