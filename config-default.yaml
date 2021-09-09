@@ -1,6 +1,6 @@
 bot:
     prefix: "."
-    name: "Fluffington"
+    name: "FluffingtonDev"
     token: ${TOKEN}
     sentry_dsn: ${SENTRY_DSN}
 
