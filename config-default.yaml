@@ -6,7 +6,6 @@ bot:
 
 guild:
     channels:
-        announcements: "announcements channel id"
         devlog_channel: 853873333027340299
 
     roles:
