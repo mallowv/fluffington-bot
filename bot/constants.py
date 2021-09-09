@@ -1,25 +1,131 @@
+import re
 from os import getenv
 
-from firebase_admin import credentials
-from dotenv import load_dotenv
-
-from bot.utils.get_yaml import get_yaml_val
-
-load_dotenv()
+import yaml
 
 
-class Client:
-    name = get_yaml_val("config.yml", "bot")["name"]
-    prefix = get_yaml_val("config.yml", "bot")["prefix"]
-    token: str = getenv("TOKEN")
-    firebase_creds = credentials.Certificate(getenv("FIREBASE_ADMIN_CREDENTIALS_PATH"))
+env_regex = re.compile(r"\${(\w+)}")
 
 
-class Channels:
-    devlog_channel: int = get_yaml_val("config.yml", "guild")["channels"]["dev_log"]
+def env_var_constructor(loader, node):
+    value = loader.construct_scalar(node)
+    key = str(value)
+    key = env_regex.search(key)
+    return getenv(key.group(1))
 
 
-class Roles:
-    moderation_roles: list[str] = get_yaml_val("config.yml", "roles")[
-        "moderation_roles"
-    ]
+yaml.SafeLoader.add_constructor("!ENV", env_var_constructor)
+yaml.SafeLoader.add_implicit_resolver("!ENV", env_regex, None)
+
+with open("config-default.yaml", "r") as config:
+    _CONFIG_YAML = yaml.safe_load(config)
+
+
+class YAMLGetter(type):
+    """
+    Implements a custom metaclass used for accessing
+    configuration data by simply accessing class attributes.
+    Supports getting configuration from up to two levels
+    of nested configuration through `section` and `subsection`.
+    `section` specifies the YAML configuration section (or "key")
+    in which the configuration lives, and must be set.
+    `subsection` is an optional attribute specifying the section
+    within the section from which configuration should be loaded.
+    Example Usage:
+        # config.yaml
+        bot:
+            prefixes:
+                direct_message: ''
+                guild: '!'
+        # config.py
+        class Prefixes(metaclass=YAMLGetter):
+            section = "bot"
+            subsection = "prefixes"
+        # Usage in Python code
+        from config import Prefixes
+        def get_prefix(bot, message):
+            if isinstance(message.channel, PrivateChannel):
+                return Prefixes.direct_message
+            return Prefixes.guild
+    """
+
+    subsection = None
+
+    def __getattr__(cls, name):
+        name = name.lower()
+
+        try:
+            if cls.subsection is not None:
+                return _CONFIG_YAML[cls.section][cls.subsection][name]
+            return _CONFIG_YAML[cls.section][name]
+        except KeyError as e:
+            dotted_path = '.'.join(
+                (cls.section, cls.subsection, name)
+                if cls.subsection is not None else (cls.section, name)
+            )
+            # Only an INFO log since this can be caught through `hasattr` or `getattr`.
+            log.info(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.")
+            raise AttributeError(repr(name)) from e
+
+    def __getitem__(cls, name):
+        return cls.__getattr__(name)
+
+    def __iter__(cls):
+        """Return generator of key: value pairs of current constants class' config values."""
+        for name in cls.__annotations__:
+            yield name, getattr(cls, name)
+
+
+class Bot(metaclass=YAMLGetter):
+    section = "bot"
+
+    name: str
+    prefix: str
+    token: str
+    sentry_dsn: str
+
+
+class Channels(metaclass=YAMLGetter):
+    section = "guild"
+    subsection = "channels"
+
+    devlog_channel: int
+
+
+class Roles(metaclass=YAMLGetter):
+    section = "guild"
+    subsection = "roles"
+
+    moderation_roles: list[str]
+
+
+class Database(metaclass=YAMLGetter):
+    section = "database"
+
+    username: str
+    password: str
+    host: str
+    port: str
+    database: str
+
+
+class Colours:
+    blue = 0x0279FD
+    bright_green = 0x01D277
+    dark_green = 0x1F8B4C
+    orange = 0xE67E22
+    pink = 0xCF84E0
+    purple = 0xB734EB
+    soft_green = 0x68C290
+    soft_orange = 0xF9CB54
+    soft_red = 0xCD6D6D
+    yellow = 0xF9F586
+    python_blue = 0x4B8BBE
+    python_yellow = 0xFFD43B
+    grass_green = 0x66FF00
+    gold = 0xE6C200
+
+
+class Cats:
+    cats = ["ᓚᘏᗢ", "ᘡᘏᗢ", "🐈", "ᓕᘏᗢ", "ᓇᘏᗢ", "ᓂᘏᗢ", "ᘣᘏᗢ", "ᕦᘏᗢ", "ᕂᘏᗢ"]
+
