@@ -4,7 +4,9 @@ from enum import Enum
 
 from dateutil.relativedelta import relativedelta
 
-ValidTimestamp = Union[int, datetime.datetime, datetime.date, datetime.timedelta, relativedelta]
+ValidTimestamp = Union[
+    int, datetime.datetime, datetime.date, datetime.timedelta, relativedelta
+]
 
 
 class TimestampFormats(Enum):
@@ -22,14 +24,21 @@ class TimestampFormats(Enum):
     RELATIVE = "R"  # 52 years ago
 
 
-def discord_timestamp(timestamp: ValidTimestamp, time_format: TimestampFormats = TimestampFormats.DATE_TIME) -> str:
+def discord_timestamp(
+    timestamp: ValidTimestamp,
+    time_format: TimestampFormats = TimestampFormats.DATE_TIME,
+) -> str:
     """Create and format a Discord flavored markdown timestamp."""
     if time_format not in TimestampFormats:
-        raise ValueError(f"Format can only be one of {', '.join(TimestampFormats.args)}, not {time_format}.")
+        raise ValueError(
+            f"Format can only be one of {', '.join(TimestampFormats.args)}, not {time_format}."
+        )
 
     # Convert each possible timestamp class to an integer.
     if isinstance(timestamp, datetime.datetime):
-        timestamp = (timestamp.replace(tzinfo=None) - datetime.datetime.utcfromtimestamp(0)).total_seconds()
+        timestamp = (
+            timestamp.replace(tzinfo=None) - datetime.datetime.utcfromtimestamp(0)
+        ).total_seconds()
     elif isinstance(timestamp, datetime.date):
         timestamp = (timestamp - datetime.date.fromtimestamp(0)).total_seconds()
     elif isinstance(timestamp, datetime.timedelta):

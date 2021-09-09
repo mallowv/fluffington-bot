@@ -80,7 +80,9 @@ class Internals(commands.Cog):
         )
 
         for command_name, count in self.command_usages.most_common(25):
-            command_stats_embed.add_field(name=command_name, value=f"{count:,}", inline=True)
+            command_stats_embed.add_field(
+                name=command_name, value=f"{count:,}", inline=True
+            )
 
         await ctx.send(embed=command_stats_embed)
 

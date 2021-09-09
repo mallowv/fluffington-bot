@@ -12,6 +12,7 @@ UNLOAD_BLACKLIST = (
 
 class Extensions(commands.Cog):
     """tools to manage extensions"""
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 

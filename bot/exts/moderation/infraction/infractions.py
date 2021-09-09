@@ -87,8 +87,8 @@ class Infractions(commands.Cog):
     ):
         muted = get(member.guild.roles, name="Muted")
         await member.add_roles(muted, reason=reason)
-        mute_duration = (
-            discord_timestamp(datetime.datetime.utcnow() + datetime.timedelta(seconds=duration))
+        mute_duration = discord_timestamp(
+            datetime.datetime.utcnow() + datetime.timedelta(seconds=duration)
         )
         mute_message = f"{mute_duration} ({datetime.timedelta(seconds=duration)})"
         await ctx.send(

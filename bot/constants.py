@@ -59,12 +59,15 @@ class YAMLGetter(type):
                 return _CONFIG_YAML[cls.section][cls.subsection][name]
             return _CONFIG_YAML[cls.section][name]
         except KeyError as e:
-            dotted_path = '.'.join(
+            dotted_path = ".".join(
                 (cls.section, cls.subsection, name)
-                if cls.subsection is not None else (cls.section, name)
+                if cls.subsection is not None
+                else (cls.section, name)
             )
             # Only an INFO log since this can be caught through `hasattr` or `getattr`.
-            log.info(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.")
+            log.info(
+                f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found."
+            )
             raise AttributeError(repr(name)) from e
 
     def __getitem__(cls, name):

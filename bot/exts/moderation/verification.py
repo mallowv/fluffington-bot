@@ -17,7 +17,9 @@ class Verification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
         if member.bot:
-            logger.info(f"a fellow bot has joined, {member.id} joined {member.guild.name}")
+            logger.info(
+                f"a fellow bot has joined, {member.id} joined {member.guild.name}"
+            )
         else:
             logger.info(f"{member.id} joined {member.guild.name}")
             await member.send(

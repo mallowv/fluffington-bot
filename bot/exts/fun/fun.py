@@ -15,7 +15,9 @@ class Fun(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=("wsid", "what"))
-    async def what_should_i_do(self, ctx: commands.Context, *, seed: typing.Optional[str] = ""):
+    async def what_should_i_do(
+        self, ctx: commands.Context, *, seed: typing.Optional[str] = ""
+    ):
         seed = seed.replace(" ", "")
         seed_num = 0
         verb = random.choice(VERBS)
