@@ -127,6 +127,7 @@ class Colours:
     python_yellow = 0xFFD43B
     grass_green = 0x66FF00
     gold = 0xE6C200
+    bot_blue = 0x6b92ff
 
 
 class Cats:
