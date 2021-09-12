@@ -1,8 +1,8 @@
-"""perhaps ints weren't the answer
+"""first migration
 
-Revision ID: b57e8d62de3c
-Revises: 68e4dc1b14c4
-Create Date: 2021-09-05 17:22:21.252681
+Revision ID: 3c650ea4107e
+Revises: 
+Create Date: 2021-09-12 17:25:21.420241
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b57e8d62de3c'
-down_revision = '68e4dc1b14c4'
+revision = '3c650ea4107e'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -21,6 +21,7 @@ def upgrade():
     op.create_table('guilds',
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('server_log_channel', sa.String(), nullable=True),
+    sa.Column('prefix', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
