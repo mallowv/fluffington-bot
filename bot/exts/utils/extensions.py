@@ -48,6 +48,7 @@ class Extensions(commands.Cog):
         """load extensions"""
         exts_list = []
         for ext in exts:
+            ext = f"bot.exts.{ext}"
             self.bot.load_extension(ext)
             exts_list.append(ext)
 
@@ -61,8 +62,9 @@ class Extensions(commands.Cog):
         exts_list = []
         unload = True
         for ext in exts:
+            ext = f"bot.exts.{ext}"
             if ext in UNLOAD_BLACKLIST:
-                await ctx.send("that cog is in the unload blacklist!")
+                await ctx.send(f"{ext} cog is in the unload blacklist!")
                 unload = False
                 continue
             self.bot.unload_extension(ext)
@@ -78,6 +80,7 @@ class Extensions(commands.Cog):
         """reload extensions"""
         exts_list = []
         for ext in exts:
+            ext = f"bot.exts.{ext}"
             self.bot.reload_extension(ext)
             exts_list.append(ext)
 
