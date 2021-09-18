@@ -113,11 +113,6 @@ class Bonk(commands.Cog):
             with futures.ThreadPoolExecutor() as pool:
                 msg = await ctx.send("this will take a sec, wait ok?")
                 out_gif = await asyncio.get_running_loop().run_in_executor(pool, func)
-                content = ""
-                for i in range(10):
-                    content += "..."
-                    await asyncio.sleep(1)
-                    await msg.edit(content=content)
 
             out_gif.seek(0)
             await ctx.send(file=discord.File(out_gif, out_filename))
