@@ -1,20 +1,21 @@
-from sys import prefix
+from datetime import datetime
 import typing as t
 import logging
 
-import coloredlogs
 import discord
+from dateutil.relativedelta import relativedelta
 from discord.ext.commands import (
     BadArgument,
-    Bot,
     Context,
     Converter,
-    IDConverter,
     UserConverter,
 )
 
+from bot import exts
+from bot.utils.time import parse_duration_string
+from bot.utils.extensions import EXTENSIONS, unqualify
+
 logger = logging.getLogger(__name__)
-coloredlogs.install(level="DEBUG", logger=logger)
 
 
 class FetchedUser(UserConverter):
@@ -88,6 +89,90 @@ def proxy_user(user_id: str) -> discord.Object:
     user.bot = False
 
     return user
+
+
+class DurationToSeconds(Converter):
+    async def convert(self, ctx, argument: str) -> int:
+        delta = parse_duration_string(argument)
+        if delta is None:
+            raise BadArgument("that's not a duration")
+        return int((datetime.utcnow() + delta - datetime.utcnow()).total_seconds())
+
+
+class DurationDelta(Converter):
+    """Convert duration strings into dateutil.relativedelta.relativedelta objects."""
+
+    async def convert(self, ctx: Context, duration: str) -> relativedelta:
+        """
+        Converts a `duration` string to a relativedelta object.
+        The converter supports the following symbols for each unit of time:
+        - years: `Y`, `y`, `year`, `years`
+        - months: `m`, `month`, `months`
+        - weeks: `w`, `W`, `week`, `weeks`
+        - days: `d`, `D`, `day`, `days`
+        - hours: `H`, `h`, `hour`, `hours`
+        - minutes: `M`, `minute`, `minutes`
+        - seconds: `S`, `s`, `second`, `seconds`
+        The units need to be provided in descending order of magnitude.
+        """
+        if not (delta := parse_duration_string(duration)):
+            raise BadArgument(f"`{duration}` is not a valid duration string.")
+
+        return delta
+
+
+class Duration(DurationDelta):
+    """Convert duration strings into UTC datetime.datetime objects."""
+
+    async def convert(self, ctx: Context, duration: str) -> datetime:
+        """
+        Converts a `duration` string to a datetime object that's `duration` in the future.
+        The converter supports the same symbols for each unit of time as its parent class.
+        """
+        delta = await super().convert(ctx, duration)
+        now = datetime.utcnow()
+
+        try:
+            return now + delta
+        except (ValueError, OverflowError):
+            raise BadArgument(f"`{duration}` results in a datetime outside the supported range.")
+
+
+class Extension(Converter):
+    """
+    Fully qualify the name of an extension and ensure it exists.
+    The * and ** values bypass this when used with the reload command.
+    """
+
+    async def convert(self, ctx: Context, argument: str) -> str:
+        """Fully qualify the name of an extension and ensure it exists."""
+        # Special values to reload all extensions
+        if argument == "*" or argument == "**":
+            return argument
+
+        argument = argument.lower()
+
+        if argument in EXTENSIONS:
+            return argument
+        elif (qualified_arg := f"{exts.__name__}.{argument}") in EXTENSIONS:
+            return qualified_arg
+
+        matches = []
+        for ext in EXTENSIONS:
+            if argument == unqualify(ext):
+                matches.append(ext)
+
+        if len(matches) > 1:
+            matches.sort()
+            names = "\n".join(matches)
+            raise BadArgument(
+                f":x: `{argument}` is an ambiguous extension name. "
+                f"Please use one of the following fully-qualified names.```\n{names}```"
+            )
+        elif matches:
+            return matches[0]
+        else:
+            raise BadArgument(f":x: Could not find the extension `{argument}`.")
 
 
 FetchedMember = t.Union[discord.Member, FetchedUser]
