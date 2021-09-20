@@ -33,3 +33,6 @@ def walk_extensions() -> Iterator[str]:
                 continue
 
         yield module.name
+
+
+EXTENSIONS = frozenset(walk_extensions())
