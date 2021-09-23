@@ -176,3 +176,4 @@ class Extension(Converter):
 
 
 FetchedMember = t.Union[discord.Member, FetchedUser]
+MemberOrUser = t.Union[discord.Member, discord.User]
