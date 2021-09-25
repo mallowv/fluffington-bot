@@ -1,3 +1,4 @@
+import importlib.util
 from datetime import datetime
 import typing as t
 import logging
@@ -36,7 +37,7 @@ class FetchedUser(UserConverter):
     """
 
     async def convert(
-        self, ctx: Context, arg: str
+            self, ctx: Context, arg: str
     ) -> t.Union[discord.User, discord.Object]:
         """Convert the `arg` to a `discord.User` or `discord.Object`."""
         try:
@@ -89,6 +90,11 @@ def proxy_user(user_id: str) -> discord.Object:
     user.bot = False
 
     return user
+
+
+def check_module(mod):
+    spec = importlib.util.find_spec(mod)
+    return spec
 
 
 class DurationToSeconds(Converter):
@@ -209,6 +215,8 @@ class Extension(Converter):
         elif matches:
             return matches[0]
         else:
+            if check_module(argument):
+                return argument
             raise BadArgument(f":x: Could not find the extension `{argument}`.")
 
 
