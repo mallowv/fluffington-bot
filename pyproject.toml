@@ -6,7 +6,7 @@ authors = ["UstmanAbdurahman <72262190+UstmanAbdurahman@users.noreply.github.com
 
 [tool.poetry.dependencies]
 python = "^3.9"
-"discord.py" = "^1.7.2"
+"discord.py" = {url = "https://github.com/Rapptz/discord.py/archive/45d498c1b76deaf3b394d17ccf56112fa691d160.zip"}
 requests = "^2.25.1"
 sentry-sdk = "^1.1.0"
 coloredlogs = "^15.0.1"
