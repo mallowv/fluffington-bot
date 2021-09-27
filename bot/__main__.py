@@ -1,24 +1,10 @@
-import logging
-
-import coloredlogs
-import sentry_sdk
-from sentry_sdk.integrations.logging import LoggingIntegration
-
 from bot.bot import Bot
+from bot.log import setup_sentry
 import bot.constants as constants
 from bot.utils.extensions import walk_extensions
 
-sentry_logging = LoggingIntegration(level=logging.DEBUG, event_level=logging.WARNING)
+setup_sentry()
 
-sentry_sdk.init(dsn=constants.Bot.sentry_dsn, integrations=[sentry_logging])
-
-logger = logging.getLogger(__name__)
-coloredlogs.install(level="DEBUG", logger=logger)
-logging.basicConfig(
-    filename="bot/logs/app.log",
-    filemode="w",
-    format="%(asctime)s %(name)s[%(process)d] %(levelname)s %(message)s",
-)
 bot = Bot.create()
 
 for ext in walk_extensions():

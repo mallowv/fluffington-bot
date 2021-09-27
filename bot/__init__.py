@@ -1,10 +1,10 @@
-try:
-    from dotenv import load_dotenv
+import asyncio
+import os
 
-    print("Found .env file, loading environment variables from it.")
-    load_dotenv()
-except ImportError:
-    print("Nevermind")
-    pass
+from bot import log
 
-__version__ = "0.1.0"
+log.setup()
+
+# On Windows, the selector event loop is required for aiodns.
+if os.name == "nt":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
