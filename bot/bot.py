@@ -2,7 +2,6 @@ import asyncio
 import logging
 import socket
 
-import coloredlogs
 import arrow
 import aiohttp
 import discord
@@ -14,7 +13,6 @@ from bot.database.database import connect
 from bot.utils.bot_prefix import BotPrefixHandler
 
 logger = logging.getLogger(__name__)
-coloredlogs.install(level="DEBUG", logger=logger)
 
 
 class Bot(commands.bot.Bot):
@@ -31,8 +29,8 @@ class Bot(commands.bot.Bot):
 
     def __init__(self, **kwargs):
         super(Bot, self).__init__(**kwargs)
-        self._guild_available = asyncio.Event()
         self.loop.create_task(self.send_log(self.name, "Connected!"))
+        self._database_available = asyncio.Event()
         self.debug = True
         self.static_prefix = False
         self._connector = None
@@ -66,9 +64,9 @@ class Bot(commands.bot.Bot):
         super(Bot, self).unload_extension(name, package=package)
         logger.info(f"Extension unloaded: {name}")
 
-    @staticmethod
-    async def on_ready():
+    async def on_ready(self):
         await connect()
+        self._database_available.set()
 
     async def login(self, *args, **kwargs):
         # Use asyncio for DNS resolution instead of threads so threads aren't spammed.
@@ -85,6 +83,9 @@ class Bot(commands.bot.Bot):
 
         await super().login(*args, **kwargs)
 
+    async def wait_until_database_ready(self):
+        await self._database_available.wait()
+
     async def send_log(
         self, title: str, details: str = None, *, icon: str = None
     ) -> None:
@@ -94,16 +95,16 @@ class Bot(commands.bot.Bot):
 
         if not devlog:
             logger.info(
-                f"Fetching devlog channel as it wasn't found in the cache (ID: {constants.Channels.devlog})"
+                f"Fetching devlog channel as it wasn't found in the cache (ID: {constants.Channels.devlog_channel})"
             )
             try:
-                devlog = await self.fetch_channel(constants.Channels.devlog)
+                devlog = await self.fetch_channel(constants.Channels.devlog_channel)
             except discord.HTTPException as discord_exc:
                 logger.exception("Fetch failed", exc_info=discord_exc)
                 return
 
         if not icon:
-            icon = self.user.avatar_url_as(format="png")
+            icon = self.user.avatar
 
         embed = Embed(description=details)
         embed.set_author(name=title, icon_url=icon)
