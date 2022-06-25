@@ -50,7 +50,7 @@ class Extensions(commands.Cog):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(
             name="Extensions List",
-            icon_url=ctx.bot.user.avatar_url
+            icon_url=ctx.bot.user.avatar.url
         )
 
         lines = []
