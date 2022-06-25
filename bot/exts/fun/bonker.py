@@ -104,7 +104,7 @@ class Bonk(commands.Cog):
     @commands.max_concurrency(3)
     async def bonk(self, ctx: commands.Context, member: discord.User) -> None:
         """Sends gif of mentioned member being "bonked" by Yoda."""
-        pfp = await member.avatar_url.read()
+        pfp = await member.avatar.read()
         created_at = ctx.message.created_at.strftime("%Y-%m-%d_%H-%M")
         out_filename = f"bonk_{member.id}_{created_at}.gif"
         func = functools.partial(self._generate_gif, pfp)
