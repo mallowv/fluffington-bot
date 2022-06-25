@@ -1,19 +1,15 @@
-import asyncio
 import logging
 import random
 import re
 import typing
-import json
-from datetime import datetime
 from typing import Iterable, Optional
 
 import discord
 from discord.ext import commands
 
 from bot.bot import Bot
-from bot.exts.moderation.modlog import ModLog
 from bot.constants import Colours, CleanMessages, Roles, Icons
-from bot.database.models import Guild, MessageLog
+from bot.database.models import Guild
 
 log = logging.getLogger(__name__)
 
