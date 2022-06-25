@@ -3,7 +3,6 @@ import logging
 from os import utime
 from collections import Counter
 
-import coloredlogs
 import discord
 from discord.ext import commands
 
@@ -11,7 +10,6 @@ from bot.bot import Bot
 from bot.constants import Roles
 
 logger = logging.getLogger(__name__)
-coloredlogs.install(level="DEBUG", logger=logger)
 
 
 class Internals(commands.Cog):
