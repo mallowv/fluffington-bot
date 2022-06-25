@@ -1,4 +1,5 @@
 import importlib.util
+import typing
 from datetime import datetime
 import typing as t
 import logging
@@ -15,6 +16,7 @@ from discord.ext.commands import (
 from bot import exts
 from bot.utils.time import parse_duration_string
 from bot.utils.extensions import EXTENSIONS, unqualify
+from bot.database.models import Infraction
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +88,7 @@ def proxy_user(user_id: str) -> discord.Object:
     user = discord.Object(user_id)
     user.mention = user.id
     user.display_name = f"<@{user.id}>"
-    user.avatar_url_as = lambda static_format: None
+    user.avatar = None
     user.bot = False
 
     return user
@@ -218,6 +220,20 @@ class Extension(Converter):
             if check_module(argument):
                 return argument
             raise BadArgument(f":x: Could not find the extension `{argument}`.")
+
+
+class InfractionConv(Converter):
+    async def convert(self, ctx: Context, argument: str) -> typing.Optional[Infraction]:
+        infr = await Infraction.get(argument)
+        if not infr:
+            raise BadArgument(
+                f"Infraction with id #{argument} does not exist"
+            )
+        if str(ctx.guild.id) != infr.guild:
+            raise BadArgument(
+                f"Infraction with id #{argument} does not exist on this server"
+            )
+        return infr
 
 
 FetchedMember = t.Union[discord.Member, FetchedUser]
