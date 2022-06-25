@@ -1,10 +1,20 @@
 import re
+import logging
 from os import getenv
+from enum import Enum
 
 import yaml
 
+try:
+    import dotenv
+    dotenv.load_dotenv()
+    print("Found .env file, loading environment variables from it.")
+except ModuleNotFoundError:
+    pass
+
 
 env_regex = re.compile(r"\${(\w+)}")
+log = logging.getLogger(__name__)
 
 
 def env_var_constructor(loader, node):
@@ -102,6 +112,69 @@ class Roles(metaclass=YAMLGetter):
     moderation_roles: list[str]
 
 
+class Icons(metaclass=YAMLGetter):
+    section = "style"
+    subsection = "icons"
+
+    crown_blurple: str
+    crown_green: str
+    crown_red: str
+
+    defcon_denied: str    # noqa: E704
+    defcon_shutdown: str  # noqa: E704
+    defcon_unshutdown: str   # noqa: E704
+    defcon_update: str   # noqa: E704
+
+    filtering: str
+
+    green_checkmark: str
+    green_questionmark: str
+    guild_update: str
+
+    hash_blurple: str
+    hash_green: str
+    hash_red: str
+
+    message_bulk_delete: str
+    message_delete: str
+    message_edit: str
+
+    pencil: str
+
+    questionmark: str
+
+    remind_blurple: str
+    remind_green: str
+    remind_red: str
+
+    sign_in: str
+    sign_out: str
+
+    superstarify: str
+    unsuperstarify: str
+
+    token_removed: str
+
+    user_ban: str
+    user_mute: str
+    user_unban: str
+    user_unmute: str
+    user_update: str
+    user_verified: str
+    user_warn: str
+
+    voice_state_blue: str
+    voice_state_green: str
+    voice_state_red: str
+
+
+class CleanMessages(metaclass=YAMLGetter):
+    section = "bot"
+    subsection = "clean"
+
+    message_limit: int
+
+
 class Database(metaclass=YAMLGetter):
     section = "database"
 
@@ -127,12 +200,40 @@ class Colours:
     python_yellow = 0xFFD43B
     grass_green = 0x66FF00
     gold = 0xE6C200
-    bot_blue = 0x6b92ff
+    bot_blue = 0x6B92FF
+
+
+class Event(Enum):
+    """
+    Event names. This does not include every event (for example, raw
+    events aren't here), but only events used in ModLog for now.
+    """
+
+    guild_channel_create = "guild_channel_create"
+    guild_channel_delete = "guild_channel_delete"
+    guild_channel_update = "guild_channel_update"
+    guild_role_create = "guild_role_create"
+    guild_role_delete = "guild_role_delete"
+    guild_role_update = "guild_role_update"
+    guild_update = "guild_update"
+
+    member_join = "member_join"
+    member_remove = "member_remove"
+    member_ban = "member_ban"
+    member_unban = "member_unban"
+    member_update = "member_update"
+
+    message_delete = "message_delete"
+    message_edit = "message_edit"
+
+    voice_state_update = "voice_state_update"
 
 
 class Cats:
     cats = ["ᓚᘏᗢ", "ᘡᘏᗢ", "🐈", "ᓕᘏᗢ", "ᓇᘏᗢ", "ᓂᘏᗢ", "ᘣᘏᗢ", "ᕦᘏᗢ", "ᕂᘏᗢ"]
 
+
+DEBUG_MODE = True
 
 NEGATIVE_REPLIES = [
     "Noooooo!!",
