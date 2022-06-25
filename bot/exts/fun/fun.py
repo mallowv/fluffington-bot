@@ -19,17 +19,12 @@ class Fun(commands.Cog):
         self, ctx: commands.Context, *, seed: typing.Optional[str] = ""
     ):
         seed = seed.replace(" ", "")
-        seed_num = 0
         verb = random.choice(VERBS)
         noun = random.choice(NOUNS)
         if seed:
-            for char in seed:
-                seed_num += ord(char)
-
-            random.seed(seed_num)
-            verb = random.choice(VERBS)
-            random.seed(seed_num)
-            noun = random.choice(NOUNS)
+            rng = random.Random(seed)
+            verb = rng.choice(VERBS)
+            noun = rng.choice(NOUNS)
 
         msg = f"You should {verb} {noun}."
         await ctx.reply(msg)
