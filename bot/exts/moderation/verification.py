@@ -1,13 +1,11 @@
 import logging
 
-import coloredlogs
 import discord
 from discord.ext import commands
 
 from bot.bot import Bot
 
 logger = logging.getLogger(__name__)
-coloredlogs.install(level="DEBUG", logger=logger)
 
 
 class Verification(commands.Cog):
